@@ -153,7 +153,6 @@ void debug(char* name, char* msg)
         printf("%s: %s\n", name, msg);
         __android_log_write(ANDROID_LOG_INFO, name, msg);
     }
-        
 }
 
 /* Get the directory that the executable is running from */
@@ -176,9 +175,7 @@ char* getCurrentDirectory()
     return buf;
 }
 
-/* 
- * Set environmental vars using a number of methods if it is not set.
- */
+/* Set environmental vars using a number of methods if it is not set. */
 void ensureEnvironmentalVarIsSet(char *varName)
 {
     /* Check if var is already set */

