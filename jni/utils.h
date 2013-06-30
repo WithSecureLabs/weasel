@@ -31,7 +31,6 @@ void debug(char* name, char* msg);
 void ensureEnvironmentalVarIsSet(char *varName);
 bool haveInstallPackages(int uid);
 bool drozerInstalled();
-bool downloadFile(char* ip, char* port, char* file, char* destFolder);
-
+bool downloadFile(char* ip, char* port, char* serverFile, char* localFolder);
 
 #endif
