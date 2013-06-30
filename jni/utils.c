@@ -321,15 +321,15 @@ bool drozerInstalled()
     char line[8192];
     bool found = false;
 
-    /* Run `pm list packages com.mwr.droidhg.agent` */
-    fp = popen("pm list packages com.mwr.droidhg.agent", "r");
+    /* Run `pm list packages com.mwr.dz` */
+    fp = popen("pm list packages com.mwr.dz", "r");
     if (fp == NULL)
         return false;
 
     /* Look for package name */
     while (fgets(line, sizeof(line) - 1, fp) != NULL && !found)
     {
-        if (strstr(line, "com.mwr.droidhg.agent"))
+        if (strstr(line, "com.mwr.dz"))
             found = true;
     }
 

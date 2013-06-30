@@ -59,11 +59,11 @@ bool privileged_weasel()
     return drozerInstalled();
 }
 
-/* Attempt to inject a limited drozer agent into running process via app_process method */
+/* Attempt to run a limited drozer agent using app_process - undocumented much? :) */
 bool sneaky_weasel()
 {
     char* fileName = "agent";
-    char* execClass = "com.mwr.drozer.ClientService";
+    char* execClass = "com.mwr.dz.Agent";
     char* jarFilePath;
     char* odexFilePath;
     char* execPath;
