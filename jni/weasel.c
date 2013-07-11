@@ -150,6 +150,8 @@ bool defeated_weasel()
 
 int main(int argc, char** argv)
 {
+    debug("weasel", "a weasel is born");
+
     /* Get current directory */
     dir = malloc(snprintf(NULL, 0, "%s", getCurrentDirectory()) + 1);
     sprintf(dir, "%s", getCurrentDirectory());
