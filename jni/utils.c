@@ -183,7 +183,7 @@ void ensureEnvironmentalVarIsSet(char *varName)
     if (env != NULL && strlen(env) > 0)
         return;
     
-    /* Parse var from /proc/self/environ */
+    /* Parse var from /proc/self/environ - environ() seems to be buggy */
     FILE *inputFile = fopen("/proc/self/environ", "rb");
     char parsedVar[3000];
     int i = 0;
