@@ -1,1 +1,1 @@
-APP_ABI := armeabi # all
+APP_ABI := all
