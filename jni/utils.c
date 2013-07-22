@@ -293,69 +293,6 @@ void ensureEnvironmentalVarIsSet(char *varName)
         
 }
 
-/* Determine if this package holds the INSTALL_PACKAGES permission */
-bool haveInstallPackages(int uid)
-{
-    char line[8192];
-    bool installPackages = false, foundPackage = false, endOfPackage = false, permsTagFound = false;
-    int lookForMax = 0;
-
-    /* Convert uid to searchable string */
-    int uidStrLen = strlen("userId=\"") + 6 + strlen("\"") + 1;
-    char *uidStr = malloc(uidStrLen);
-    snprintf(uidStr, uidStrLen, "userId=\"%d\"", uid);
-
-    /* Open file */
-    FILE *inputFile = fopen("/data/system/packages.xml", "r");
-
-    lookForPackage:
-
-        /* Search for package definition */
-        while (!foundPackage && fgets(line, sizeof(line), inputFile) != NULL)
-        {
-            if (strstr(line, uidStr) > 0)
-                foundPackage = true;
-        }
-
-        /* Sanity check if the package is not found */
-        if (!foundPackage)
-        {
-            /* Close file */
-            fclose(inputFile);
-
-            return false;
-        }
-
-        /* Look for end of package definition and INSTALL_PACKAGES */
-        while (!endOfPackage && fgets(line, sizeof(line), inputFile) != NULL)
-        {
-            if (strstr(line, "android.permission.INSTALL_PACKAGES") > 0)
-                installPackages = true;
-
-            if (strstr(line, "<perms>") > 0)
-                permsTagFound = true;
-
-            if (strstr(line, "</package>") > 0)
-                endOfPackage = true;
-        }
-
-    /* This check is in place because sometimes the uidStr is found more than once in the XML without the permissions */
-    if (foundPackage && endOfPackage && !permsTagFound && (lookForMax < 10))
-    {
-        foundPackage = false;
-        endOfPackage = false;
-        installPackages = false;
-        lookForMax++;
-        goto lookForPackage;
-    }
-
-    /* Close file */
-    fclose(inputFile);
-
-    /* Return whether current package has INSTALL_PACKAGES */
-    return installPackages;
-}
-
 /* Determine if drozer was successfully installed */
 bool drozerInstalled()
 {
