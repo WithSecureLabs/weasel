@@ -95,7 +95,7 @@ bool sneaky_weasel()
     return false;
 }
 
-/* If all the other techniques have failed, send a shell */
+/* Send a shell as a backup if the other methods have failed */
 bool defeated_weasel()
 {
     /* Create socket */
