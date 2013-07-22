@@ -239,9 +239,51 @@ void ensureEnvironmentalVarIsSet(char *varName)
     }
     else
     {
-        /* Assign a default that is used on the Android 4.0.4 emulator - all other methods have failed */
         if (strcmp(varName, "BOOTCLASSPATH") == 0)
-            setenv("BOOTCLASSPATH", "/system/framework/core.jar:/system/framework/core-junit.jar:/system/framework/bouncycastle.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar:/system/framework/apache-xml.jar:/system/framework/filterfw.jar", 1);
+        {
+            /* Dynamically build BOOTCLASSPATH based on observations from various devices */
+            const int numJars = 14;
+            char *jars[numJars];
+            jars[0] = "/system/framework/core.jar";
+            jars[1] = "/system/framework/core-junit.jar";
+            jars[2] = "/system/framework/bouncycastle.jar";
+            jars[3] = "/system/framework/ext.jar";
+            jars[4] = "/system/framework/framework.jar";
+            jars[5] = "/system/framework/framework2.jar";
+            jars[6] = "/system/framework/telephony-common.jar";
+            jars[7] = "/system/framework/mms-common.jar";
+            jars[8] = "/system/framework/android.policy.jar";
+            jars[9] = "/system/framework/services.jar";
+            jars[10] = "/system/framework/apache-xml.jar";
+            jars[11] = "/system/framework/filterfw.jar";
+            jars[12] = "/system/framework/sec_edm.jar";
+            jars[13] = "/system/framework/seccamera.jar";
+            
+            /* Get largest possible size of BOOTCLASSPATH */
+            int totalLength = numJars + 1;
+            for (i = 0; i < numJars; i++)
+            {
+                totalLength += strlen(jars[i]);
+            }
+
+            /* Generate new BOOTCLASSPATH by checking existence of jars */
+            char *bootClassPath = malloc(totalLength);
+            memset(bootClassPath, 0, totalLength);
+
+            for (i = 0; i < numJars; i++)
+            {
+                if (access(jars[i], F_OK) != -1)
+                {
+                    /* Avoid prepending a : */
+                    if (strlen(bootClassPath) > 0)
+                        strcat(bootClassPath, ":");
+
+                    strcat(bootClassPath, jars[i]);
+                }
+            }
+            
+            setenv("BOOTCLASSPATH", bootClassPath, 1);
+        }
         else if (strcmp(varName, "PATH") == 0)
             setenv("PATH", "/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin", 1);
         else if (strcmp(varName, "LD_LIBRARY_PATH") == 0)
