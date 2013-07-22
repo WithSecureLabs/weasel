@@ -359,24 +359,24 @@ bool haveInstallPackages(int uid)
 /* Determine if drozer was successfully installed */
 bool drozerInstalled()
 {
-    FILE *fp;
     char line[8192];
-    bool found = false;
+    bool foundPackage = false;
 
-    /* Run `pm list packages com.mwr.dz` */
-    fp = popen("pm list packages com.mwr.dz", "r");
-    if (fp == NULL)
-        return false;
+    /* Open file */
+    FILE *inputFile = fopen("/data/system/packages.xml", "r");
 
-    /* Look for package name */
-    while (fgets(line, sizeof(line) - 1, fp) != NULL && !found)
+    /* Search for package name */
+    while (!foundPackage && fgets(line, sizeof(line), inputFile) != NULL)
     {
-        if (strstr(line, "com.mwr.dz"))
-            found = true;
+        if (strstr(line, "com.mwr.dz") > 0)
+            foundPackage = true;
     }
 
-    pclose(fp);
-    return found;
+    /* Close file */
+    fclose(inputFile);
+
+    /* Return whether 'com.mwr.dz' is installed */
+    return foundPackage;
 }
 
 /* Download a file from an HTTP server and put in folder - uses http_fetcher */
