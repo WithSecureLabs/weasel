@@ -178,119 +178,70 @@ char* getCurrentDirectory()
 /* Set environmental vars using a number of methods if it is not set. */
 void ensureEnvironmentalVarIsSet(char *varName)
 {
-    /* Check if var is already set */
-    char *env = getenv(varName);
-    if (env != NULL && strlen(env) > 0)
+    int i;
+
+    if (strcmp(varName, "PATH") == 0)
+    {
+        setenv("PATH", "/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin", 1);
+        debug("weasel_PATH", "/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin");
         return;
-    
-    /* Parse var from /proc/self/environ - environ() seems to be buggy */
-    FILE *inputFile = fopen("/proc/self/environ", "rb");
-    char parsedVar[3000];
-    int i = 0;
-    bool found = false;
-    bool firstChar = true;
-    bool falseAlarm = false;
-
-    while (!found && i < 10000)
-    {
-        if (fgetc(inputFile) == varName[0])
-        {
-            if (fgetc(inputFile) == varName[1] && fgetc(inputFile) == varName[2] && fgetc(inputFile) == varName[3])
-            {
-                /* Check that previous char was \0 to ensure that we are not catching the "PATH" in "LD_LIBRARY_PATH" */
-                if (!firstChar)
-                {
-                    /* Adjust to test for \0 */
-                    fseek(inputFile, -5, SEEK_CUR);
-
-                    /* If the preceding char is not null then it is a false alarm */
-                    if (fgetc(inputFile) != 0)
-                        falseAlarm = true;
-
-                    /* Adjust back */
-                    fseek(inputFile, 4, SEEK_CUR);
-                }
-                
-                if (!falseAlarm)
-                {
-                    /* Jump over '=' to get to important bit */
-                    fseek(inputFile, strlen(varName) - 3, SEEK_CUR);
-
-                    /* Read string - all these vars are \0 separated */
-                    fscanf(inputFile, "%s", parsedVar);
-
-                    if (strlen(parsedVar) > 0)
-                        found = true;    
-                }
-            }
-        }
-
-        firstChar = false;
-        falseAlarm = false;
-        i++;
     }
-    fclose(inputFile);
-
-    if (found)
+    else if (strcmp(varName, "LD_LIBRARY_PATH") == 0)
     {
-        /* Use var found in /proc/self/environ */
-        setenv(varName, parsedVar, 1);
-        debug(varName, parsedVar);
+        /* Check if var is already set */
+        char *env = getenv(varName);
+        if (env != NULL && strlen(env) > 0)
+            return;
+
+        setenv("LD_LIBRARY_PATH", "/vendor/lib:/system/lib", 1);
+        debug("weasel_LD_LIBRARY_PATH", "/vendor/lib:/system/lib");
+        return;
     }
-    else
+    else if (strcmp(varName, "BOOTCLASSPATH") == 0)
     {
-        if (strcmp(varName, "BOOTCLASSPATH") == 0)
-        {
-            /* Dynamically build BOOTCLASSPATH based on observations from various devices */
-            const int numJars = 14;
-            char *jars[numJars];
-            jars[0] = "/system/framework/core.jar";
-            jars[1] = "/system/framework/core-junit.jar";
-            jars[2] = "/system/framework/bouncycastle.jar";
-            jars[3] = "/system/framework/ext.jar";
-            jars[4] = "/system/framework/framework.jar";
-            jars[5] = "/system/framework/framework2.jar";
-            jars[6] = "/system/framework/telephony-common.jar";
-            jars[7] = "/system/framework/mms-common.jar";
-            jars[8] = "/system/framework/android.policy.jar";
-            jars[9] = "/system/framework/services.jar";
-            jars[10] = "/system/framework/apache-xml.jar";
-            jars[11] = "/system/framework/filterfw.jar";
-            jars[12] = "/system/framework/sec_edm.jar";
-            jars[13] = "/system/framework/seccamera.jar";
-            
-            /* Get largest possible size of BOOTCLASSPATH */
-            int totalLength = numJars + 1;
-            for (i = 0; i < numJars; i++)
-            {
-                totalLength += strlen(jars[i]);
-            }
-
-            /* Generate new BOOTCLASSPATH by checking existence of jars */
-            char *bootClassPath = malloc(totalLength);
-            memset(bootClassPath, 0, totalLength);
-
-            for (i = 0; i < numJars; i++)
-            {
-                if (access(jars[i], F_OK) != -1)
-                {
-                    /* Avoid prepending a : */
-                    if (strlen(bootClassPath) > 0)
-                        strcat(bootClassPath, ":");
-
-                    strcat(bootClassPath, jars[i]);
-                }
-            }
-            
-            setenv("BOOTCLASSPATH", bootClassPath, 1);
-        }
-        else if (strcmp(varName, "PATH") == 0)
-            setenv("PATH", "/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin", 1);
-        else if (strcmp(varName, "LD_LIBRARY_PATH") == 0)
-            setenv("LD_LIBRARY_PATH", "/vendor/lib:/system/lib", 1);
-        debug(varName, "default set");
-    }
+        /* Dynamically build BOOTCLASSPATH based on observations from various devices */
+        const int numJars = 14;
+        char *jars[numJars];
+        jars[0] = "/system/framework/core.jar";
+        jars[1] = "/system/framework/core-junit.jar";
+        jars[2] = "/system/framework/bouncycastle.jar";
+        jars[3] = "/system/framework/ext.jar";
+        jars[4] = "/system/framework/framework.jar";
+        jars[5] = "/system/framework/framework2.jar";
+        jars[6] = "/system/framework/telephony-common.jar";
+        jars[7] = "/system/framework/mms-common.jar";
+        jars[8] = "/system/framework/android.policy.jar";
+        jars[9] = "/system/framework/services.jar";
+        jars[10] = "/system/framework/apache-xml.jar";
+        jars[11] = "/system/framework/filterfw.jar";
+        jars[12] = "/system/framework/sec_edm.jar";
+        jars[13] = "/system/framework/seccamera.jar";
         
+        /* Get largest possible size of BOOTCLASSPATH */
+        int totalLength = numJars + 1;
+        for (i = 0; i < numJars; i++)
+        {
+            totalLength += strlen(jars[i]);
+        }
+
+        /* Generate new BOOTCLASSPATH by checking existence of jars */
+        char *bootClassPath = malloc(totalLength);
+        memset(bootClassPath, 0, totalLength);
+
+        for (i = 0; i < numJars; i++)
+        {
+            if (access(jars[i], F_OK) != -1)
+            {
+                /* Avoid prepending a : */
+                if (strlen(bootClassPath) > 0)
+                    strcat(bootClassPath, ":");
+
+                strcat(bootClassPath, jars[i]);
+            }
+        }
+        
+        setenv("BOOTCLASSPATH", bootClassPath, 1);
+    }
 }
 
 /* Determine if drozer was successfully installed */
