@@ -29,7 +29,6 @@ bool odexAPKJAR(const char* zipName, const char* odexName);
 char* getCurrentDirectory();
 void debug(char* name, char* msg);
 void ensureEnvironmentalVarIsSet(char *varName);
-bool haveInstallPackages(int uid);
 bool drozerInstalled();
 bool downloadFile(char* ip, char* port, char* serverFile, char* localFolder);
 
