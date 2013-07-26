@@ -23,34 +23,30 @@ bool privileged_weasel()
     /* Delay for 3s */
     sleep(3);
 
-    if (drozerInstalled())
+    /* Get SDK version from SystemProperties */
+    char sdkVersionStr[4];
+    long sdkVersionLong;
+    property_get("ro.build.version.sdk", sdkVersionStr, NULL);
+    sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
+
+    /* Check if device is running Android 3.0.x or less */
+    if (sdkVersionLong <= 11)
     {
-        /* Get SDK version from SystemProperties */
-        char sdkVersionStr[4];
-        long sdkVersionLong;
-        property_get("ro.build.version.sdk", sdkVersionStr, NULL);
-        sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
-
-        /* Check if device is running Android 3.0.x or less */
-        if (sdkVersionLong <= 11)
-        {
-            /* Start drozer by sending a broadcast */
-            const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
-            system(amBroadcast);
-            debug("weasel", "Starting method - sent broadcast");
-        }
-        else
-        {
-             /* Start drozer by invoking the service */
-            const char* amService = "am startservice -n com.mwr.dz/.Agent";
-            system(amService);
-            debug("weasel", "Starting method - invoked service");
-        }
-
-        return true;
+        /* Start drozer by sending a broadcast */
+        const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
+        system(amBroadcast);
+        debug("weasel", "Starting method - sent broadcast");
     }
     else
-        return false;
+    {
+         /* Start drozer by invoking the service */
+        const char* amService = "am startservice -n com.mwr.dz/.Agent";
+        system(amService);
+        debug("weasel", "Starting method - invoked service");
+    }
+
+    /* This may misreport that it is not installed if packages.xml is not accessible */
+    return drozerInstalled();
 }
 
 /* Attempt to run a limited drozer agent using app_process - undocumented much? :) */

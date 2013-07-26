@@ -268,7 +268,7 @@ bool drozerInstalled()
     }
     else
     {
-        /* Use another method */
+        /* Use another method here */
     }
 
     /* Return whether 'com.mwr.dz' is installed */
