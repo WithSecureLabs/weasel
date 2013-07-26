@@ -23,12 +23,6 @@ bool privileged_weasel()
     /* Delay for 3s */
     sleep(3);
 
-    /* Get SDK version from SystemProperties */
-    char sdkVersionStr[4];
-    long sdkVersionLong;
-    property_get("ro.build.version.sdk", sdkVersionStr, NULL);
-    sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
-
     /* Start drozer by sending a broadcast */
     const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
     system(amBroadcast);
