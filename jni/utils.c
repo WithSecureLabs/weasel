@@ -200,7 +200,7 @@ void ensureEnvironmentalVarIsSet(char *varName)
     else if (strcmp(varName, "BOOTCLASSPATH") == 0)
     {
         /* Dynamically build BOOTCLASSPATH based on observations from various devices - this possibly needs a different approach */
-        const int numJars = 14;
+        const int numJars = 18;
         char *jars[numJars];
         jars[0] = "/system/framework/core.jar";
         jars[1] = "/system/framework/core-junit.jar";
