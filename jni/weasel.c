@@ -29,21 +29,15 @@ bool privileged_weasel()
     property_get("ro.build.version.sdk", sdkVersionStr, NULL);
     sdkVersionLong = strtol(sdkVersionStr, NULL, 10);
 
-    /* Check if device is running Android 3.0.x or less */
-    if (sdkVersionLong <= 11)
-    {
-        /* Start drozer by sending a broadcast */
-        const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
-        system(amBroadcast);
-        debug("weasel", "Starting method - sent broadcast");
-    }
-    else
-    {
-         /* Start drozer by invoking the service */
-        const char* amService = "am startservice -n com.mwr.dz/.Agent";
-        system(amService);
-        debug("weasel", "Starting method - invoked service");
-    }
+    /* Start drozer by sending a broadcast */
+    const char* amBroadcast = "am broadcast -a com.mwr.dz.PWN";
+    system(amBroadcast);
+    debug("weasel", "Starting method - sent broadcast");
+
+    /* Start drozer by invoking the service */
+    const char* amService = "am startservice -n com.mwr.dz/.Agent";
+    system(amService);
+    debug("weasel", "Starting method - invoked service");
 
     /* This may misreport that it is not installed if packages.xml is not accessible */
     return drozerInstalled();
