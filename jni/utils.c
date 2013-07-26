@@ -199,7 +199,7 @@ void ensureEnvironmentalVarIsSet(char *varName)
     }
     else if (strcmp(varName, "BOOTCLASSPATH") == 0)
     {
-        /* Dynamically build BOOTCLASSPATH based on observations from various devices */
+        /* Dynamically build BOOTCLASSPATH based on observations from various devices - this possibly needs a different approach */
         const int numJars = 14;
         char *jars[numJars];
         jars[0] = "/system/framework/core.jar";
@@ -216,7 +216,11 @@ void ensureEnvironmentalVarIsSet(char *varName)
         jars[11] = "/system/framework/filterfw.jar";
         jars[12] = "/system/framework/sec_edm.jar";
         jars[13] = "/system/framework/seccamera.jar";
-        
+        jars[14] = "/system/framework/com.htc.framework.jar";
+        jars[15] = "/system/framework/com.htc.android.pimlib.jar";
+        jars[16] = "/system/framework/com.htc.android.easopen.jar";
+        jars[17] = "/system/framework/com.scalado.util.ScaladoUtil.jar";
+                
         /* Get largest possible size of BOOTCLASSPATH */
         int totalLength = numJars + 1;
         for (i = 0; i < numJars; i++)
