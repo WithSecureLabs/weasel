@@ -253,15 +253,23 @@ bool drozerInstalled()
     /* Open file */
     FILE *inputFile = fopen("/data/system/packages.xml", "r");
 
-    /* Search for package name */
-    while (!foundPackage && fgets(line, sizeof(line), inputFile) != NULL)
+    /* Check because the permissions on some devices do not allow access to packages.xml */
+    if (inputFile != NULL)
     {
-        if (strstr(line, "com.mwr.dz") > 0)
-            foundPackage = true;
-    }
+        /* Search for package name */
+        while (!foundPackage && fgets(line, sizeof(line), inputFile) != NULL)
+        {
+            if (strstr(line, "com.mwr.dz") > 0)
+                foundPackage = true;
+        }
 
-    /* Close file */
-    fclose(inputFile);
+        /* Close file */
+        fclose(inputFile);
+    }
+    else
+    {
+        /* Use another method */
+    }
 
     /* Return whether 'com.mwr.dz' is installed */
     return foundPackage;
