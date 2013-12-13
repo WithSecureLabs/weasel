@@ -200,28 +200,34 @@ void ensureEnvironmentalVarIsSet(char *varName)
     else if (strcmp(varName, "BOOTCLASSPATH") == 0)
     {
         /* Dynamically build BOOTCLASSPATH based on observations from various devices - this possibly needs a different approach */
-        const int numJars = 20;
+        const int numJars = 26;
         char *jars[numJars];
         jars[0] = "/system/framework/core.jar";
         jars[1] = "/system/framework/core-junit.jar";
         jars[2] = "/system/framework/bouncycastle.jar";
         jars[3] = "/system/framework/ext.jar";
         jars[4] = "/system/framework/framework.jar";
-        jars[5] = "/system/framework/framework_ext.jar";
-        jars[6] = "/system/framework/framework2.jar";
-        jars[7] = "/system/framework/hwframework.jar";
-        jars[8] = "/system/framework/telephony-common.jar";
-        jars[9] = "/system/framework/mms-common.jar";
-        jars[10] = "/system/framework/android.policy.jar";
-        jars[11] = "/system/framework/services.jar";
-        jars[12] = "/system/framework/apache-xml.jar";
-        jars[13] = "/system/framework/filterfw.jar";
-        jars[14] = "/system/framework/sec_edm.jar";
-        jars[15] = "/system/framework/seccamera.jar";
+        jars[5] = "/system/framework/widget.jar";
+        jars[6] = "/system/framework/framework_ext.jar";
+        jars[7] = "/system/framework/framework2.jar";
+        jars[8] = "/system/framework/hwframework.jar";
+        jars[9] = "/system/framework/telephony-common.jar";
+        jars[10] = "/system/framework/mms-common.jar";
+        jars[11] = "/system/framework/android.policy.jar";
+        jars[12] = "/system/framework/services.jar";
+        jars[13] = "/system/framework/apache-xml.jar";
+        jars[14] = "/system/framework/HTCDev.jar";
+        jars[15] = "/system/framework/HTCExtension.jar";
         jars[16] = "/system/framework/com.htc.framework.jar";
-        jars[17] = "/system/framework/com.htc.android.pimlib.jar";
-        jars[18] = "/system/framework/com.htc.android.easopen.jar";
-        jars[19] = "/system/framework/com.scalado.util.ScaladoUtil.jar";
+        jars[17] = "/system/framework/filterfw.jar";
+        jars[18] = "/system/framework/com.htc.android.bluetooth.jar";
+        jars[19] = "/system/framework/sec_edm.jar";
+        jars[20] = "/system/framework/seccamera.jar";
+        jars[21] = "/system/framework/com.htc.android.pimlib.jar";
+        jars[22] = "/system/framework/com.htc.android.easopen.jar";
+        jars[23] = "/system/framework/com.scalado.util.ScaladoUtil.jar";
+        jars[24] = "/system/framework/wimax.jar";
+        jars[25] = "/system/framework/com.orange.authentication.simcard.jar";
                 
         /* Get largest possible size of BOOTCLASSPATH */
         int totalLength = numJars + 1;
